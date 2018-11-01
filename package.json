@@ -1,0 +1,19 @@
+{
+  "name": "ee_backend",
+  "version": "0.0.0",
+  "description": "Backend technical challenge for Electricity Exchange",
+  "main": "electricity.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/citkane/eebackend.git"
+  },
+  "author": "Michael Jonker",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/citkane/eebackend/issues"
+  },
+  "homepage": "https://github.com/citkane/eebackend#readme"
+}
