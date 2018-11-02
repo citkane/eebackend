@@ -15,5 +15,12 @@
   "bugs": {
     "url": "https://github.com/citkane/eebackend/issues"
   },
-  "homepage": "https://github.com/citkane/eebackend#readme"
+  "homepage": "https://github.com/citkane/eebackend#readme",
+  "dependencies": {
+    "fs-extra": "^7.0.0",
+    "mysql": "^2.16.0",
+    "prompt": "^1.0.0",
+    "winston": "^3.1.0",
+    "winston-daily-rotate-file": "^3.4.1"
+  }
 }
