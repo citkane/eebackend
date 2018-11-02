@@ -1,0 +1,10 @@
+
+Possible commands:
+
+help : this info
+q : quit the command line console
+make : make a site or DSU
+move : move a site to a different DSU
+delete : delete a site or DSU
+report : write the active state of the network to a file
+list : list all sites or DSUs to the console
