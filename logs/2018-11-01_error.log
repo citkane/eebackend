@@ -1,0 +1,13 @@
+2018-11-1 22:02:04 [error] An error occurred while inputting data
+2018-11-1 22:25:34 [error] ER_ACCESS_DENIED_ERROR: Access denied for user 'test'@'localhost' (using password: YES)
+2018-11-1 22:50:55 [error] An error occurred while inputting data
+2018-11-1 22:52:45 [error] An error occurred while inputting data
+2018-11-1 22:53:28 [error] ER_ACCESS_DENIED_ERROR: Access denied for user 'test'@'localhost' (using password: YES)
+2018-11-1 23:07:20 [error] An error occurred while inputting data
+2018-11-1 23:07:56 [error] ER_ACCESS_DENIED_ERROR: Access denied for user 'test'@'localhost' (using password: YES)
+2018-11-1 23:19:35 [error] ER_ACCESS_DENIED_ERROR: Access denied for user 'asd'@'localhost' (using password: YES)
+2018-11-1 23:20:43 [error] ER_ACCESS_DENIED_ERROR: Access denied for user 'sdf'@'localhost' (using password: YES)
+2018-11-1 23:21:42 [error] ER_ACCESS_DENIED_ERROR: Access denied for user 'sdf'@'localhost' (using password: YES)
+2018-11-1 23:22:23 [error] ER_ACCESS_DENIED_ERROR: Access denied for user 'dsf'@'localhost' (using password: YES)
+2018-11-1 23:23:57 [error] ER_ACCESS_DENIED_ERROR: Access denied for user 'sd'@'localhost' (using password: YES)
+2018-11-1 23:27:45 [error] ER_ACCESS_DENIED_ERROR: Access denied for user 'sdf'@'localhost' (using password: YES)
