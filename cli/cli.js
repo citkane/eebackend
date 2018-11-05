@@ -1,110 +1,57 @@
 "use strict";
+/*eslint no-console: ["error", { allow: ["log"] }] */
 
 const fs = require("fs");
 const path = require("path");
-var dnode = require('dnode');
+var dnode = require("dnode");
 const prompt = require("prompt");
+const colors = require("colors/safe");
 const portFile = path.join(__dirname,".port");
 const logoFile = path.join(__dirname,"logo.txt");
 let helpFile = path.join(__dirname,"help.txt");
-const helpLines = {};
+let api,Prompts;
+
 if(!fs.existsSync(portFile)){
 	console.log(`
 
 Server is not running.
-Run the server with 'npm run server' and try again.
+Run the server with "npm run production" or "npm run development" and try again.
 Exiting the CLI.
 
 	`);
 	process.exit();
 }
-let api;
 const port = fs.readFileSync(portFile).toString();
 const rpc = dnode.connect(port);
 rpc.on("remote",function(remote){
 	api = remote;
-	startConsole();
-})
+	const {init} = require("./prompts");
+	init(Do,formatPairs,line,bold,api);
+	const {prompts} = require("./prompts");
+	Prompts = prompts;
+	startConsole();	
+});
 
 function startConsole(){
 	helpFile = fs.readFileSync(helpFile).toString();
-	parseCommands();
 	const logo = fs.readFileSync(logoFile).toString();
-	console.log(logo);
+	console.log(line(logo));
 	console.log(`
-Welcome to the Electricity Exchange control interface.
-To quite the console, enter (q)
-For help, enter (help)
+${bold("Welcome to the Electricity Exchange control interface")}
+
+To quite the console, enter (${bold("q")}) from a ${line("command:")} prompt
+For help, enter (${bold("help")}) from a ${line("command:")} prompt
+
 Documentation is at https://github.com/citkane/eebackend
 
-	`)
-	prompt.message = "ElectricEx";
-	prompt.delimiter = ": "
+	`);
+	prompt.message = colors.dim("ElectricEx");
+	prompt.delimiter = ": ";
 	prompt.start();
-	prompts.command();
+	Prompts.command();
 }
 
-const prompts = {
-	command:()=>{
-		prompt.get("command",function(err,result){
-			if(Do[result.command]){
-				Do[result.command]();
-			}else{
-				console.log(`Command '${result.command}' not found, try again or type 'help'`);
-				prompts.command();
-			}
-		})
-	},
-	make:()=>{
-		const schema = {
-			properties: {
-				type: {
-					description:"make a (site) or (dsu) or (c) to cancel",
-					enum:["site","dsu","c"],
-					message: "input must be (site) or (dsu)",
-					required: true,
-				},
-				dsu: {
-					description:"Enter a nickname for this dsu, (enter) for none or (c) to cancel",
-					ask:function(){
-						const val = prompt.history('type').value;
-						return (val!=="c" && val!=="site");
-					}
-				},
-				site:{
-					description:"Enter a nickname for this site, (enter) for none or (c) to cancel",
-					ask:function(){
-						const val = prompt.history('type').value;
-						return (val!=="c" && val!=="dsu");
-					}
-				}
-			}
-		};
-		prompt.get(schema,function(err,result){
-			if(err){
-				console.log(err);
-				return;
-			}
-			const cancelled = Object.keys(result).some((key)=>{
-				return result[key] === "c";
-			})
-			if(cancelled){
-				prompts.command();
-				return;
-			}
-			api["make_"+result.type](result[result.type],(err)=>{
-				if(!err){
-					console.log(result);
-					
-				}else{
-					console.log(err);
-				}
-				prompts.command();
-			})
-			
-		})
-	}
-}
+
 
 const Do = {
 	q:()=>{
@@ -113,37 +60,54 @@ const Do = {
 	},
 	help:()=>{
 		console.log(helpFile);
-		prompts.command();
+		Prompts.command();
 	},
 	make:()=>{
-		console.log(helpLines.make);
-		prompts.make();
+		console.log(" ");
+		api.getData((data)=>{
+			Prompts.make(data);
+		});
 	},
 	move:()=>{
-		console.log(helpLines.move);
-		prompts.command();
+		console.log(" ");
+		api.getData((data)=>{
+			Prompts.move(data);
+		});
 	},
 	delete:()=>{
-		console.log(helpLines.delete);
-		prompts.command();
+		console.log(" ");
+		api.getData((data)=>{
+			Prompts.delete(data);
+		});		
 	},
 	report:()=>{
-		console.log(helpLines.report);
-		prompts.command();
+		console.log(" ");
+		api.report((err,file)=>{
+			if(err){
+				console.log(err);
+			}else{
+				console.log(`The report has been filed to "${file}"\n`);
+			}
+			Prompts.command();
+		});
 	},
 	list:()=>{
-		console.log(helpLines.list);
-		prompts.command();
+		console.log(" ");
+		api.getData((data)=>{
+			Prompts.list(data);
+		});		
 	}
-}
+};
 
-function parseCommands(){
-	let parsed = helpFile.trim().split("\n");
-	parsed.shift();
-	parsed = parsed.forEach((line)=>{
-		if(line){
-			const duo = line.split(":");
-			helpLines[duo[0].trim()] = duo[1].trim()
-		}
-	})
+function bold(text){
+	return colors.bold(text);
+}
+function line(text){
+	return colors.green(text);
+}
+function formatPairs(data){
+	return data.keyPairs.map((pair,i)=>{
+		const id = data.keys[i];
+		return pair + colors.dim(`[${data.sites[id].pairs.length}]`);
+	}).join(" | ");
 }

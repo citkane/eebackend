@@ -1,57 +1,99 @@
 "use strict";
+
 const fs = require("fs");
 const path = require("path");
-const {init} = require("./lib/init.js");
-const {Log} = require("./lib/globals");
+const {init} = require("./lib/init");
+const {Log,state} = require("./lib/globals");
+const {loopSites,loopDsus,get,closeDB} = require("./lib/sql");
 const {rpc} = require("./cli/rpcServer");
 const portFile = path.join(__dirname,"cli/.port");
-const mode = process.argv[2];
-if(mode !== "production" && mode !=="development"){
-	error("Please start the application with `npm run server` or `node electricity development`.");
+
+if(state.env !== "production" && state.env !=="development"){
+	error("Please start the application with `npm run production` or `npm run development`.");
 }
+
 Log.info(" ");
 Log.info("------------------------------------------------ Server has started\n");
-process.on("beforeExit",(code)=>{
-	Log.info("------------------------------------------------ Server has stopped"+code+"\n");
-	process.exit();
-})
 
 
-//initialise the database
-const boot1 = (err)=>{
-	if(err) error(err);
-	rpc(boot2)
-}
+/****************** Start Boot sequence **************/
 
 //start the rpc server for cli
-const boot2 = (err)=>{
+const boot1 = (err)=>{	
 	if(err) error(err);
-	boot3();
-}
+	if(process.argv[3] === "install"){
+		console.log("\nINSTALLED\nPlease start with`npm run production` or `npm run development`\nA production server can be stopped with `npm run stop`\nA remote console interface is available with `npm run cli\n");
+		process.exit();
+	}else{
+		rpc(boot2);
+	}	
+};
+
+//update the data model;
+const boot2 = ()=>{
+	get.all(boot3);
+};
 
 
 //start the logic loops
-const boot3 = (err)=>{
+const frequency = 1000;
+const boot3 = (err)=>{	
 	if(err) error(err);
-	console.log("Starting the loops");
-}
+	/* 
+	** These could effectively be combined into a single loop and query group, 
+	** improving the timeliness of total_power vs. single query performance.
+	**
+	** Set `state.singleLoopStrategy = true` to enable a single loop.
+	*/
+	state.singleLoopStrategy = false;	
+	Log.info(`Starting the ${state.singleLoopStrategy?"loop":"loops"}`);
 
-init(boot1);
+	setInterval(()=>{
+		loopSites();
+	},frequency);
+
+	if(!state.singleLoopStrategy){
+		setTimeout(()=>{
+			setInterval(()=>{
+				loopDsus();
+			},frequency);
+		},frequency/2);	
+	}
+};
+
+init(boot1); //initialise the database
+
+/****************** End Boot sequence **************/
 
 function error(err){
-	if(typeof err !== "boolean") Log.error(err);
-	Log.error("Shutting down, check the logs for more details");
-	process.exit();
+	if(typeof err !== "boolean"){
+		Log.error(err.stack||err);
+	}else{
+		Log.error("Shutting down, check the logs for more details");
+	}
+	process.exit("SIGINT");
 }
 
-function exitHandler(exitCode) {
-	if(fs.existsSync(portFile)) fs.unlinkSync(portFile);
+function exitHandler(err,exitCode) {
+	if(err) Log.error(err.stack);
 	Log.info("------------------------------------------------ Server has stopped ["+exitCode+"]\n");
+	if(fs.existsSync(portFile)) fs.unlinkSync(portFile);
+	closeDB();
 	process.exit();
 }
 
-process.on('exit', exitHandler);
-process.on('SIGINT', exitHandler);
-process.on('SIGUSR1', exitHandler);
-process.on('SIGUSR2', exitHandler);
-process.on('uncaughtException', exitHandler);
+process.on("exit",(code)=>{
+	exitHandler(null,code);
+});
+process.on("SIGINT",()=>{
+	exitHandler(null,"SIGINT");
+});
+process.on("SIGUSR1",()=>{
+	exitHandler(null,"SIGUSR1");
+});
+process.on("SIGUSR2",()=>{
+	exitHandler(null,"SIGUSR2");
+});
+process.on("uncaughtException",(err)=>{
+	exitHandler(err,"uncaughtException");
+});

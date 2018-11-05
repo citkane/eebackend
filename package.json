@@ -1,13 +1,15 @@
 {
   "name": "ee_backend",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Backend technical challenge for Electricity Exchange",
   "main": "electricity.js",
   "scripts": {
-    "test": "test",
+    "test": "jest",
     "cli": "node ./cli/cli.js",
-    "server":"./node_modules/.bin/forever -p logs/forever --minUptime 1000 --spinSleepTime 10000 --killSignal SIGINT start electricity.js production",
-    "stop":"./node_modules/.bin/forever stop electricity.js"
+    "production": "./node_modules/.bin/forever -p logs/forever --minUptime 1000 --spinSleepTime 10000 --killSignal SIGINT start electricity.js production",
+    "install": "node ./electricity.js development install",
+    "development": "node ./electricity.js development",
+    "stop": "./node_modules/.bin/forever stop electricity.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +22,7 @@
   },
   "homepage": "https://github.com/citkane/eebackend#readme",
   "dependencies": {
+    "colors": "^1.3.2",
     "dnode": "^1.2.2",
     "forever": "^0.15.3",
     "fs-extra": "^7.0.0",
@@ -28,5 +31,8 @@
     "prompt": "^1.0.0",
     "winston": "^3.1.0",
     "winston-daily-rotate-file": "^3.4.1"
+  },
+  "devDependencies": {
+    "jest": "^23.6.0"
   }
 }
