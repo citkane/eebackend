@@ -21,26 +21,35 @@ Only tested for localhost install and connection.
 mkdir <yourdirectory>
 cd <yourdirectory>
 git clone https://github.com/citkane/eebackend.git ./
-npm install
 ```
 Create an empty mySql database and give a user all privileges on it, then:
 ```
-npm run install
+npm install
 ```
-Follow the console prompts to provide database connection details.
+Follow the console prompts to provide and save database connection details.
 ## How to use ##
 Start the application server with one of the following:
 ```
 npm run production
 npm run development
 ```
-An interface for the application is available with:
-```
-npm run cli
-```
 A production instance will release the console. To stop the process, do:
 ```
 npm run stop
+```
+An RPC interface for the application is available with:
+```
+npm run cli
+```
+Possible commands are:
+```
+help   : this info
+q      : quit the command line console
+make   : make a site or DSU
+move   : move a site to a different DSU
+delete : delete a site or DSU
+report : write the active state of the network to a file
+list   : list all sites or DSUs to the console
 ```
 Logs are at:
 ```
@@ -49,7 +58,7 @@ Logs are at:
 ## Testing ##
 Run tests with:
 ```
-npm run test
+npm test
 ```
 
 
