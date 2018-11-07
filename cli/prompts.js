@@ -222,7 +222,8 @@ Please first ${bold("delete")} or ${bold("move")} all Sites.
 						conform:function(value){
 							if(value !== "c") value = parseFloat(value);
 							return value === "c"||data.keys.indexOf(value)!==-1;
-						}
+						},
+						required: true,
 					},
 					sites:{
 						description:line(`Select the Site[s] you want to move (${bold("id,id2,...")}) or (${bold("c")}) to cancel`),
@@ -235,7 +236,9 @@ Please first ${bold("delete")} or ${bold("move")} all Sites.
 							);
 							return true;
 						},
+						required: true,
 						conform:function(value){
+
 							if (value !== "c") value = `[${value}]`;
 							try{
 								value = JSON.parse(value);
@@ -259,7 +262,7 @@ Please first ${bold("delete")} or ${bold("move")} all Sites.
 						message: "No DSU with that id was found",
 						ask:function(){
 							const dsu = prompt.history("from").value;
-							const sites = prompt.history("sites").value;
+							const sites = prompt.history("sites")?prompt.history("sites").value:false;
 							if(dsu === "c" || sites === "c") return false;
 							console.log(data.keyPairs.length?formatPairs(data):`There are no DSUs to move from,(${bold("c")}) to cancel`
 							);
@@ -268,7 +271,8 @@ Please first ${bold("delete")} or ${bold("move")} all Sites.
 						conform:function(value){
 							if(value !== "c") value = parseFloat(value);
 							return value === "c"||data.keys.indexOf(value)!==-1;
-						}
+						},
+						required: true,
 					}
 				}
 			};
