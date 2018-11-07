@@ -45,7 +45,7 @@ const boot3 = (err)=>{
 	**
 	** Set `state.singleLoopStrategy = true` to enable a single loop.
 	*/
-	state.singleLoopStrategy = false;	
+	state.singleLoopStrategy = false;
 	Log.info(`Starting the ${state.singleLoopStrategy?"loop":"loops"}`);
 
 	setInterval(()=>{
