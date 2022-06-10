@@ -3,10 +3,10 @@
 **Operating environment:**
 
 Built and tested with;
-* Ubuntu 18.04
-* mySql Ver 14.14 Distrib 5.7.24
-* Node v8.12.0
-* NPM 6.4.1
+* Ubuntu 22.04
+* mySql Ver 8.0.29
+* Node v10.24.1
+* NPM 6.14.12
 
 **RPC command line interface**
 
